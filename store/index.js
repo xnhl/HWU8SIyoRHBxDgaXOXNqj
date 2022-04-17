@@ -621,8 +621,8 @@ export const mutations = {
 		})
 	},
 	replace: (state, todos) => { state.list = todos },
+	update: (state, todos) => { state.list = todos },
 	remove: (state, todo) => { state.list = state.list.filter(each => each.id !== todo.id) },
-	updateTodos: (state, todos) => { state.list = todos },
 	toggle: (state, todo) => {
 		let x = state.list.filter(each => each.id == todo.id)[0]
 		x.completed = !x.completed
@@ -653,8 +653,8 @@ export const actions = {
 	remove: ({ commit }, todo) => { commit('remove', todo) },
 	toggle: ({ commit }, todo) => { commit('toggle', todo) },
 	replace: ({ commit }, todos) => { commit('replace', todos) },
+	update: ({ commit }, todos) => { commit('update', todos) },
 	removeCompleted: ({ commit }) => { commit('removeCompleted') },
-	updateTodos: ({ commit }, todos) => { commit('updateTodos', todos) },
 	sortAlpha: ({ commit }, reverse = false) => { commit('sortAlpha', reverse) },
 	sortLength: ({ commit }, reverse = false) => { commit('sortLength', reverse) },
 	sortCompleted: ({ commit }, reverse = false) => { commit('sortCompleted', reverse) }

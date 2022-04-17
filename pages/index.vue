@@ -21,7 +21,7 @@
 		<div id="search-container">
 			<input id="search" class="p-2 m-2 hide" :class="{ 'dark': !colorMode, 'text-white': !colorMode }" @input="search()" @change="search()" placeholder="Search...">
 		</div>
-		<b-jumbotron id="jumbo" class="m-4 text-center" :class="{ 'dark': !colorMode, 'text-white': !colorMode }" header="To Do List" lead="Built with Vue, Vuex, Nuxt, and BootstrapVue.">
+		<b-jumbotron id="jumbo" class="m-4 text-center" :class="{ 'dark': !colorMode, 'text-white': !colorMode, 'hide': hideJumbo }" header="To Do List" lead="Built with Vue, Vuex, Nuxt, and BootstrapVue.">
 			<p>Sort, search, save / load (text, json), and drag to rearrange.</p>
 			<b-button variant="secondary" href="#" @click="closeJumbo()">Close</b-button>
 		</b-jumbotron>
@@ -39,37 +39,38 @@ export default {
 	data() {
 		return {
 			time: `${this.$moment().format("LL")} ${this.$moment().format("LTS")}`,
-			sort_alpha: false,
-			sort_length: false,
-			sort_completed: false
+			sortByAlpha: false,
+			sortByLength: false,
+			sortByCompleted: false,
+			hideJumbo: false
 		}
 	},
 	computed: {
-		colorMode: function() {
-			return this.$nuxt.$colorMode.preference == "light" ? true : false
-		},
-		todos: function() {
-			return this.$store.state.list
-		},
+		colorMode: function() { return this.$nuxt.$colorMode.preference == "light" ? true : false },
+		todos: function() { return this.$store.state.list },
 		list: {
-			get() {
-				return this.$store.state.list
-			},
-			set(value) {
-				this.$store.dispatch('updateTodos', value)
-			}
+			get() { return this.$store.state.list },
+			set(value) { this.$store.dispatch('update', value) }
 		}
 	},
 	methods: {
-		changeTheme() { this.$nuxt.$colorMode.preference = this.$nuxt.$colorMode.preference == "light" ? "dark" : "light" },
-		closeJumbo() {
-			let jumbo = document.getElementById("jumbo")
-			jumbo.classList.add("hide")
+		changeTheme() {
+			this.$nuxt.$colorMode.preference = this.$nuxt.$colorMode.preference == "light" ? "dark" : "light"
 		},
 		showDialog() {
 			const fileInput = document.getElementById('options-load')
 			fileInput.click()
 		},
+		toggleSearch() { 
+			let search = document.getElementById("search")
+			search.classList.toggle("hide")
+		},
+		add(e) {
+			this.$store.dispatch('add', {text: e.target.value, timestamp: this.$moment().format("llll")})
+			e.target.value = ''
+		},
+		remove() { this.$store.dispatch('removeCompleted') },
+		closeJumbo() { this.hideJumbo = true },
 		search() {
 			setTimeout(() => {
 				let val = document.getElementById("search").value
@@ -84,32 +85,23 @@ export default {
 				}
 			}, 500)
 		},
-		toggleSearch() { 
-			let search = document.getElementById("search")
-			search.classList.toggle("hide")
-		},
-    add(e) {
-      this.$store.dispatch('add', {text: e.target.value, timestamp: this.$moment().format("llll")})
-      e.target.value = ''
-		},
-		remove() { this.$store.dispatch('removeCompleted') },
 		sortAlpha() {
-			if (this.sort_alpha == true) {
+			if (this.sortByAlpha == true) {
 				this.$store.dispatch('sortAlpha', true)
 			} else { this.$store.dispatch('sortAlpha') }
-			this.sort_alpha = !this.sort_alpha
+			this.sortByAlpha = !this.sortByAlpha
 		},
 		sortLength() {
-			if (this.sort_length == true) {
+			if (this.sortByLength == true) {
 				this.$store.dispatch('sortLength', true)
 			} else { this.$store.dispatch('sortLength') }
-			this.sort_length = !this.sort_length
+			this.sortByLength = !this.sortByLength
 		},
 		sortCompleted() {
-			if (tcis.sort_Completed == true) {
+			if (this.sortByCompleted == true) {
 				this.$store.dispatch('sortCompleted', true)
 			} else { this.$store.dispatch('sortCompleted') }
-			this.cort_Completed = !this.sort_Completed
+			this.sortByCompleted = !this.sortByCompleted
 		},
 		save() {
 			let FileSaver = require('file-saver')

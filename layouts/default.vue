@@ -8,7 +8,7 @@
 export default {
 	head() {
 		return {
-			title: 'project',
+			title: 'To Do List',
 			meta: [
 				{
 					charset: 'utf-8'
