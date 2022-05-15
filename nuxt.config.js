@@ -1,7 +1,8 @@
 export default {
 	target: 'static',
-	loading: { color: 'transparent' },
+	components: true,
 	axios: { baseURL: '/' },
+	loading: { color: 'transparent' },
   modules: [
 		'@nuxtjs/moment',
 		'bootstrap-vue/nuxt',

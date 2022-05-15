@@ -25,6 +25,12 @@
 			<p>Sort, search, save / load (text, json), and drag to rearrange.</p>
 			<b-button variant="secondary" href="#" @click="closeJumbo()">Close</b-button>
 		</b-jumbotron>
+		<div id="counts" v-if="hasTodos">
+			<p id="counts-text" class="p-2 m-3 text-center" :class="{ 'text-white': !colorMode }" v-text="counts"></p>
+			<div id="counts-bar">
+				<div id="counts-bar-fill" :style="`width: ${countsPct}%`"></div>
+			</div>
+		</div>
 		<draggable id="todos" class="m-2" v-model="list" @start="drag=true" @end="drag=false">
 			<ToDo v-for="(todo, index) in todos" :key="`todo-${index}`" :info="todo" :mode="colorMode" />
 		</draggable>
@@ -32,10 +38,9 @@
 </template>
 
 <script>
-import ToDo from '@/components/ToDo.vue'
 import draggable from 'vuedraggable'
 export default {
-	components: { ToDo, draggable },
+	components: { draggable },
 	data() {
 		return {
 			time: `${this.$moment().format("LL")} ${this.$moment().format("LTS")}`,
@@ -46,10 +51,22 @@ export default {
 		}
 	},
 	computed: {
-		colorMode: function() { return this.$nuxt.$colorMode.preference == "light" ? true : false },
-		todos: function() { return this.$store.state.list },
+		todos() { return this.$store.getters.all },
+		hasTodos() { return this.$store.getters.total },
+		counts() {
+			let total = this.$store.getters.total
+			let active = this.$store.getters.activeCount
+			let done = this.$store.getters.completedCount
+			return `${done} / ${total} done, ${active} remaining`
+		},
+		countsPct() {
+			let total = this.$store.getters.total
+			let done = this.$store.getters.completedCount
+			return parseFloat((done / total) * 100)
+		},
+		colorMode() { return this.$nuxt.$colorMode.preference == "light" ? true : false },
 		list: {
-			get() { return this.$store.state.list },
+			get() { return this.$store.getters.all },
 			set(value) { this.$store.dispatch('update', value) }
 		}
 	},
@@ -226,6 +243,22 @@ export default {
 			border: 0
 			border-radius: 0.5rem
 		#options-load
+	#counts
+		width: 100%
+		#counts-text
+			font-size: 1.25rem
+			line-height: 1.25rem
+			@include flexCenter
+		#counts-bar
+			max-width: 23rem
+			height: 1rem
+			margin: 0.5rem auto
+			overflow: hidden
+			border-radius: 0.5rem
+			background: desaturate(red, 66)
+			#counts-bar-fill
+				background: desaturate(green, 66)
+				height: 1rem
 	#search-container
 		width: 100%
 		@include flexCenter

@@ -604,10 +604,12 @@ export const state = () => ({
 })
 
 export const getters = {
-	completed: state => state.list.filter(todo => todo.completed),
+	all: state => state.list,
+	total: state => state.list.length,
 	active: state => state.list.filter(todo => !todo.completed),
-	completedCount: (getters) => getters.completed.length,
-	activeCount: (getters) => getters.active.length,
+	completed: state => state.list.filter(todo => todo.completed),
+	activeCount: state => state.list.filter(todo => !todo.completed).length,
+	completedCount: state => state.list.filter(todo => todo.completed).length,
 	searchResult: (state, word) => state.list.filter(todo => todo.title.indexOf(word) > -1)
 }
 
